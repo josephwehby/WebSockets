@@ -27,13 +27,15 @@ int main() {
     std::cin.get();
 
     std::cout << "Closing WebSocket..." << std::endl;
+    client->close();
+
+    ioc.stop();
 
     // Join the IO thread before exiting
     if (io_thread.joinable()) {
         io_thread.join();
     }
 
-    client->close();
 
     return 0;
 }
