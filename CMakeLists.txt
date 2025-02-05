@@ -11,9 +11,13 @@ find_package(Boost COMPONENTS asio beast REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
-set(SRC main.cpp WebSocket.cpp)
-set(HEADERS WebSocket.hpp root_certificates.hpp)
+file(GLOB SRC "src/*.cpp")
+
+include_directories(
+  "./include"
+)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-add_executable(websocket_client ${SRC} ${HEADERS})
+add_executable(websocket_client ${SRC})
 
 target_link_libraries(websocket_client PRIVATE Boost::asio Boost::beast OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json)
