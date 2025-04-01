@@ -1,0 +1,15 @@
+[!] Open Websocket for ticker BTC/USD
+Press Enter to stop the WebSocket connection...
+Received: {"channel":"status","type":"update","data":[{"version":"2.0.9","system":"online","api_version":"v2","connection_id":9857921962138820555}]}
+Received: {"method":"subscribe","result":{"channel":"ticker","event_trigger":"trades","snapshot":true,"symbol":"XMR/USD"},"success":true,"time_in":"2025-04-01T19:39:44.401776Z","time_out":"2025-04-01T19:39:44.401823Z"}
+Received: {"channel":"ticker","type":"snapshot","data":[{"symbol":"XMR/USD","bid":216.74,"bid_qty":1.31620000,"ask":216.79,"ask_qty":6.74977325,"last":216.77,"volume":4978.60956859,"vwap":216.25,"low":214.00,"high":218.78,"change":0.58,"change_pct":0.27}]}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Received: {"channel":"heartbeat"}
+Closing WebSocket...

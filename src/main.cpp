@@ -21,7 +21,7 @@ int main() {
         ioc.run();
     });
 
-    client->connect("ticker", "BTC/USD");
+    //client->connect("ticker", "BTC/USD");
     client->connect("ticker", "XMR/USD");
 
     std::cout << "Press Enter to stop the WebSocket connection..." << std::endl;
