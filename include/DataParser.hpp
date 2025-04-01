@@ -1,12 +1,21 @@
+#pragma once
+
 #include <thread>
 #include <unordered_map>
-#include "Utils.hpp"
+#include <nlohmann/json.hpp>
+#include "SafeQueue.hpp"
+
+using json = nlohmann::json;
 
 class DataParser {
   public:
     DataParser();
-    void pushData(); 
+    ~DataParser();
+    void pushData(json); 
   private:
+    std::thread t; 
+    SafeQueue<json> data;
+
     void processLoop();
-    void parseData();
+    void parseData(std::shared_ptr<json>);
 };
