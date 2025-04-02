@@ -1,1 +1,1 @@
-{"channel" : "heartbeat"}
+{"channel":"ticker","type":"snapshot","data":[{"symbol":"XMR/USD","bid":216.74,"bid_qty":1.31620000,"ask":216.79,"ask_qty":6.74977325,"last":216.77,"volume":4978.60956859,"vwap":216.25,"low":214.00,"high":218.78,"change":0.58,"change_pct":0.27}]}

@@ -42,14 +42,14 @@ void DataParser::parseData(std::shared_ptr<json> item) {
     return;
   }
 
-  std::string channel = item.at("channel");
+  std::string channel = item->at("channel");
   if (channel == "heartbeat" || channel == "status") {
     std::cout << "[!] heartbeat or status channel: ignoring" << std::endl; 
     return;
   }
   
   if (channel == "ticker") {
-    
+    parseTicker(item);    
   } else if (channel == "book") {
 
   } else if (channel == "ohlc") {
@@ -59,4 +59,28 @@ void DataParser::parseData(std::shared_ptr<json> item) {
   } else {
     return;
   }
+}
+
+void DataParser::parseTicker(std::shared_ptr<json> item) {
+  
+  std::string symbol = item->at("data")[0]["symbol"];
+  
+  double best_bid = item->at("data")[0]["bid"];
+  double best_ask = item->at("data")[0]["ask"];
+
+  double best_bid_size = item->at("data")[0]["bid_qty"];
+  double best_ask_size = item->at("data")[0]["ask_qty"];
+
+  double price_change = item->at("data")[0]["change"];
+  double percent_change = item->at("data")[0]["change_pct"];
+
+  double last_price = item->at("data")[0]["last"];
+  
+  std::cout << "last price " << last_price << std::endl;
+  std::cout << "bid " << best_bid << " " << best_bid_size << std::endl;
+  std::cout << "ask " << best_ask << " " << best_ask_size << std::endl;
+  std::cout << "price change " << price_change << std::endl;
+  std::cout << "percent change " << percent_change << std::endl;
+
+  std::cout << item->dump() << std::endl;
 }
