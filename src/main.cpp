@@ -1,5 +1,5 @@
 #include <thread>
-
+#include <chrono>
 #include "WebSocket.hpp"
 
 int main() {
@@ -21,12 +21,14 @@ int main() {
         ioc.run();
     });
 
-    //client->connect("ticker", "BTC/USD");
-    client->connect("ticker", "XMR/USD");
+    client->connect();
+//    std::this_thread::sleep_for(std::chrono::seconds(2));    
+    client->subscribe("XMR/USD", "ticker");
 
     std::cout << "Press Enter to stop the WebSocket connection..." << std::endl;
     std::cin.get();
-
+    
+    client->unsubscribe("XMR/USD", "ticker");
     std::cout << "Closing WebSocket..." << std::endl;
     client->close();
 

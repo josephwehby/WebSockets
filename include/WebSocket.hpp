@@ -19,13 +19,16 @@ namespace http = beast::http;
 namespace websocket = beast::websocket;
 namespace net = boost::asio;
 namespace ssl = boost::asio::ssl;
+
 using tcp = boost::asio::ip::tcp;
 using json = nlohmann::json;
 
 class WebSocket : public std::enable_shared_from_this<WebSocket> {
   public:
     explicit WebSocket(net::io_context&, ssl::context&);
-    void connect(std::string, std::string);
+    void connect();
+    void subscribe(std::string, std::string);
+    void unsubscribe(std::string, std::string);
     void close();
   private:
     void onResolve(beast::error_code, tcp::resolver::results_type);
@@ -36,13 +39,11 @@ class WebSocket : public std::enable_shared_from_this<WebSocket> {
     void doRead();
     void onWrite(beast::error_code, std::size_t);
     void send(json&);
-    void onUnsubscribe(beast::error_code, std::size_t);
     void onClose(beast::error_code);
-    
+
     std::string m_host = "ws.kraken.com";
     std::string m_port = "443";
-    std::string m_symbol;
-    std::string m_channel;
+    bool m_is_connected = false;
 
     tcp::resolver m_resolver;
     ssl::context m_ssl_ctx {ssl::context::tlsv12_client};

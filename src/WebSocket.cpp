@@ -12,26 +12,54 @@ WebSocket::WebSocket(net::io_context& ioc, ssl::context& ctx)
       m_ssl_ctx = std::move(ctx);
 }
 
-void WebSocket::connect(std::string channel, std::string symbol) {
-  m_symbol = symbol;
-  m_channel = channel;
+void WebSocket::connect() {
   m_resolver.async_resolve(m_host, m_port, beast::bind_front_handler(&WebSocket::onResolve, shared_from_this()));
 }
 
-void WebSocket::close() {
-  if (!m_ws.is_open()) return;
+void WebSocket::subscribe(std::string symbol, std::string channel) {
+  if (!m_ws.is_open()) {
+    std::cout << "[!] Websocket is not open. Unable to unsubscribe." << std::endl;
+    return;
+  }
+  
+  std::cout << "[!] Subscribing to " << channel << " for " << symbol << std::endl;
+
+  json subscribe_msg = {
+    {"method", "subscribe"},
+    {"params", {
+      {"channel", channel},
+      {"symbol", {symbol}}
+    }}
+  };
+
+  send(subscribe_msg);
+}
+
+void WebSocket::unsubscribe(std::string symbol, std::string channel) {
+  if (!m_ws.is_open()) {
+    std::cout << "[!] Websocket is not open. Unable to unsubscribe." << std::endl;
+    return;
+  }
+
+  std::cout << "[!] Unsubscribing to " << channel << " for " << symbol << std::endl;
   
   json unsubscribe_msg = {
     {"method", "unsubscribe"},
     {"params", {
-      {"channel", m_channel},
-      {"symbol", {m_symbol}}
+      {"channel", channel},
+      {"symbol", {symbol}}
     }}
   };
-  
-  m_ws.async_write(net::buffer(unsubscribe_msg.dump()), 
-      beast::bind_front_handler(&WebSocket::onUnsubscribe, shared_from_this())
-      ); 
+
+  send(unsubscribe_msg);  
+}
+
+void WebSocket::close() {
+  if (!m_ws.is_open()) return;
+
+  m_ws.async_close(beast::websocket::close_code::normal,
+      beast::bind_front_handler(&WebSocket::onClose, shared_from_this())
+      );
 }
 
 void WebSocket::onResolve(beast::error_code ec, tcp::resolver::results_type results) {
@@ -97,15 +125,9 @@ void WebSocket::onHandshake(beast::error_code ec) {
     return fail(ec, "handshake");
   }
   
-  json subscribe_msg = {
-    {"method", "subscribe"},
-    {"params", {
-      {"channel", m_channel},
-      {"symbol", {m_symbol}}
-    }}
-  };
-
-  send(subscribe_msg);
+  std::cout << "[!] Websocket connection is opened." << std::endl;
+  
+  doRead();
 }
 
 void WebSocket::onRead(beast::error_code ec, std::size_t bytes_transferred) {
@@ -131,8 +153,6 @@ void WebSocket::onWrite(beast::error_code ec, std::size_t bytes_transferred) {
   if (ec) {
     return fail(ec, "on write");
   }
-
-  doRead();
 }
 
 void WebSocket::send(json& msg) {
@@ -140,21 +160,11 @@ void WebSocket::send(json& msg) {
       beast::bind_front_handler(&WebSocket::onWrite, shared_from_this()));
 }
 
-void WebSocket::onUnsubscribe(beast::error_code ec, std::size_t bytes_transferred) {
-  if (ec) {
-    return fail(ec, "unsubcribe");
-  }
-
-  m_ws.async_close(beast::websocket::close_code::normal, 
-      beast::bind_front_handler(&WebSocket::onClose, shared_from_this())
-      );
-}
-
 void WebSocket::onClose(beast::error_code ec) {
   if (ec) {
     return fail(ec, "close");
   }
 
-  std::cout << "Websocket for " << m_channel << ": " << m_symbol << " has closed." << std::endl;
+  std::cout << "[!] Kraken websocket has closed." << std::endl;
 }
 
